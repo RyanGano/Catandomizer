@@ -1,7 +1,0 @@
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\CatandomizerService.exe
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\appsettings.Development.json
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\appsettings.json
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\CatandomizerService.dll
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\CatandomizerService.deps.json
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\CatandomizerService.runtimeconfig.json
-C:\Code\Catandomizer\CatandomizerService\bin\Release\net7.0\publish\CatandomizerService.pdb
