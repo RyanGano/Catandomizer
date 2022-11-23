@@ -1,0 +1,178 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Catandomizer</PageTitle>
+
+<p>Build a random (valid) layout for Catan.</p>
+<p>
+  <input placeholder="Layout Id" @bind="Id" />
+  <button @onclick="Recalculate">Recalculate</button>
+</p>
+
+@if (boardState is null || boardState.LandSpaces is null || boardSpaces is null)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+  <div style="min-height: 600px; min-width: 600px">
+    <div style="position:relative; top: 0px">
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[6].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[6].Value</div>
+      </div>
+    </div>
+    <div style="position:relative; top: 58.5px">
+      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[7].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[7].Value</div>
+      </div>
+      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[5].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[5].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 117px">
+      <div style="position: absolute; left: 0px"><img src=@boardSpaces[8].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[8].Value</div>
+      </div>
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[15].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[15].Value</div>
+      </div>
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[4].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[4].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 175.5px">
+      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[16].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[16].Value</div>
+      </div>
+      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[14].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[14].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 234px">
+      <div style="position: absolute; left: 0px"><img src=@boardSpaces[9].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[9].Value</div>
+      </div>
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[18].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[18].Value</div>
+      </div>
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[3].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[3].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 292.5px">
+      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[17].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[17].Value</div>
+      </div>
+      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[13].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[13].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 351px">
+      <div style="position: absolute; left: 0px"><img src=@boardSpaces[10].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[10].Value</div>
+      </div>
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[12].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[12].Value</div>
+      </div>
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[2].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[2].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 409.5px">
+      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[11].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[11].Value</div>
+      </div>
+      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[1].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[1].Value</div>
+      </div>
+    </div>
+
+    <div style="position:relative; top: 468px">
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[0].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[0].Value</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: relative">ID = @boardState.Id</div>
+}
+
+@code {
+  private BoardState? boardState;
+  private BoardSpace[]? boardSpaces;
+
+  private const string c_padding = "padding: 15px;";
+  private const string c_border = "border: 5px solid";
+
+  private string? Id;
+
+  private const string c_mountainStyle = $"{c_padding} {c_border} #a7a297";
+  private const string c_hillStyle = $"{c_padding} {c_border} #e90f0f";
+  private const string c_forestStyle = $"{c_padding} {c_border} #195d16";
+  private const string c_fieldStyle = $"{c_padding} {c_border} #e9d75d";
+  private const string c_pastureStyle = $"{c_padding} {c_border} #7fe17b";
+  private const string c_desertStyle = $"{c_padding} {c_border} #9e7213";
+  private const string c_emptyStyle = $"{c_padding} #ffffff";
+
+  private async Task Recalculate()
+  {
+    boardSpaces = null;
+    boardState = null;
+
+    // Local testing:
+    // var servicePath = "http://localhost:5149/getboard";
+
+    var servicePath = "https://catandomizerservice.azurewebsites.net/getboard";
+
+    if (Id is not null)
+      servicePath += $"/{Id}";
+
+    boardState = await Http.GetFromJsonAsync<BoardState>(servicePath);
+    boardSpaces = boardState!.LandSpaces!.Select(x => new BoardSpace(x)).ToArray();
+  }
+
+  protected override async Task OnInitializedAsync()
+  {
+    await Recalculate();
+  }
+
+  public class BoardState
+  {
+    public LandSpace[]? LandSpaces { get; set; }
+
+    public int Id { get; set; }
+  }
+
+  public class LandSpace
+  {
+    public string? Type { get; set; }
+    public int? Value { get; set; }
+  }
+
+  public class BoardSpace
+  {
+    public BoardSpace(LandSpace landSpace)
+    {
+      Image = landSpace.Type switch
+      {
+        "Ore / Mountain" => "assets/Mountain.png",
+        "Brick / Hill" => "assets/Hill.png",
+        "Lumber / Forest" => "assets/Forest.png",
+        "Wheat / Field" => "assets/Field.png",
+        "Sheep / Pasture" => "assets/Pasture.png",
+        "Desert" => "assets/Desert.png",
+        _ => throw new NotSupportedException()
+      };
+      Value = landSpace?.Value;
+    }
+
+    public int? Value { get; }
+
+    public string Image { get; }
+  }
+}
