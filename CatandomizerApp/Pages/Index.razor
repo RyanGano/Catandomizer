@@ -9,28 +9,42 @@
   <button @onclick="Recalculate">Recalculate</button>
 </p>
 
-@if (boardState is null || boardState.LandSpaces is null || boardSpaces is null)
+@if (boardState is null || boardState.LandSpaces is null || boardSpaces is null || harborSpaces is null)
 {
   <p><em>Loading...</em></p>
 }
 else
 {
-  <div style="min-height: 600px; min-width: 600px">
-    <div style="position:relative; top: 0px">
+  <div>
+    <div style="position:relative; top: 0px; left: 304.5px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[9].Image /></div>
+    </div>
+
+    <div style="position:relative; top: 58.5px; left: 203.5px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[10].Image /></div>
+      <div style="position: absolute; left: 203px"><img src=@harborSpaces[8].Image /></div>
+    </div>
+
+    <div style="position:relative; top: 117px; left: 101.5px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[11].Image /></div>
       <div style="position: absolute; left: 203px"><img src=@boardSpaces[6].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[6].Value</div>
       </div>
-    </div>
-    <div style="position:relative; top: 58.5px">
-      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[7].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[7].Value</div>
-      </div>
-      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[5].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[5].Value</div>
-      </div>
+      <div style="position: absolute; left: 406px"><img src=@harborSpaces[7].Image /></div>
     </div>
 
-    <div style="position:relative; top: 117px">
+    <div style="position:relative; top: 175.5px; left: 0px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[12].Image /></div>
+      <div style=" position: absolute; left: 203px"><img src=@boardSpaces[7].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[7].Value</div>
+      </div>
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[5].Image />
+        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[5].Value</div>
+      </div>
+      <div style="position: absolute; left: 608px"><img src=@harborSpaces[6].Image /></div>
+    </div>
+
+    <div style="position:relative; top: 234px; left: 101.5px">
       <div style="position: absolute; left: 0px"><img src=@boardSpaces[8].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[8].Value</div>
       </div>
@@ -42,16 +56,18 @@ else
       </div>
     </div>
 
-    <div style="position:relative; top: 175.5px">
-      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[16].Image />
+    <div style="position:relative; top: 292.5px; left: 0px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[13].Image /></div>
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[16].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[16].Value</div>
       </div>
-      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[14].Image />
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[14].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[14].Value</div>
       </div>
+      <div style="position: absolute; left: 608px"><img src=@harborSpaces[5].Image /></div>
     </div>
 
-    <div style="position:relative; top: 234px">
+    <div style="position:relative; top: 351px; left: 101.5px">
       <div style="position: absolute; left: 0px"><img src=@boardSpaces[9].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[9].Value</div>
       </div>
@@ -63,16 +79,18 @@ else
       </div>
     </div>
 
-    <div style="position:relative; top: 292.5px">
-      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[17].Image />
+    <div style="position:relative; top: 409.5px; left: 0px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[14].Image /></div>
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[17].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[17].Value</div>
       </div>
-      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[13].Image />
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[13].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[13].Value</div>
       </div>
+      <div style="position: absolute; left: 608px"><img src=@harborSpaces[4].Image /></div>
     </div>
 
-    <div style="position:relative; top: 351px">
+    <div style="position:relative; top: 468px; left: 101.5px">
       <div style="position: absolute; left: 0px"><img src=@boardSpaces[10].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[10].Value</div>
       </div>
@@ -84,19 +102,32 @@ else
       </div>
     </div>
 
-    <div style="position:relative; top: 409.5px">
-      <div style="position: absolute; left: 101.5px"><img src=@boardSpaces[11].Image />
+    <div style="position:relative; top: 526.5px; left: 0px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[15].Image /></div>
+      <div style="position: absolute; left: 203px"><img src=@boardSpaces[11].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[11].Value</div>
       </div>
-      <div style="position: absolute; left: 303.5px"><img src=@boardSpaces[1].Image />
+      <div style="position: absolute; left: 406px"><img src=@boardSpaces[1].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[1].Value</div>
       </div>
+      <div style="position: absolute; left: 608px"><img src=@harborSpaces[3].Image /></div>
     </div>
 
-    <div style="position:relative; top: 468px">
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[0].Image />
+    <div style="position:relative; top: 585px; left: 101.5px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[16].Image /></div>
+      <div style="position: absolute; left:203px"><img src=@boardSpaces[0].Image />
         <div style="position: relative; top: -71px; text-align: center">@boardSpaces[0].Value</div>
       </div>
+      <div style="position: absolute; left: 406px"><img src=@harborSpaces[2].Image /></div>
+    </div>
+
+    <div style="position:relative; top: 643.5px; left: 203px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[17].Image /></div>
+      <div style="position: absolute; left: 203px"><img src=@harborSpaces[1].Image /></div>
+    </div>
+
+    <div style="position:relative; top: 702px; left: 304.5px">
+      <div style="position: absolute; left: 0px"><img src=@harborSpaces[0].Image /></div>
     </div>
   </div>
   <div style="position: relative">ID = @boardState.Id</div>
@@ -105,6 +136,7 @@ else
 @code {
   private BoardState? boardState;
   private BoardSpace[]? boardSpaces;
+  private HarborSpace[]? harborSpaces;
 
   private const string c_padding = "padding: 15px;";
   private const string c_border = "border: 5px solid";
@@ -134,6 +166,7 @@ else
 
     boardState = await Http.GetFromJsonAsync<BoardState>(servicePath);
     boardSpaces = boardState!.LandSpaces!.Select(x => new BoardSpace(x)).ToArray();
+    harborSpaces = boardState!.WaterSpaces!.Select(x => new HarborSpace(x)).ToArray();
   }
 
   protected override async Task OnInitializedAsync()
@@ -145,6 +178,8 @@ else
   {
     public LandSpace[]? LandSpaces { get; set; }
 
+    public WaterSpace[]? WaterSpaces { get; set; }
+
     public int Id { get; set; }
   }
 
@@ -154,17 +189,22 @@ else
     public int? Value { get; set; }
   }
 
+  public class WaterSpace
+  {
+    public string? Type { get; set; }
+  }
+
   public class BoardSpace
   {
     public BoardSpace(LandSpace landSpace)
     {
       Image = landSpace.Type switch
       {
-        "Ore / Mountain" => "assets/Mountain.png",
-        "Brick / Hill" => "assets/Hill.png",
-        "Lumber / Forest" => "assets/Forest.png",
-        "Wheat / Field" => "assets/Field.png",
-        "Sheep / Pasture" => "assets/Pasture.png",
+        "Mountain" => "assets/Mountain.png",
+        "Hill" => "assets/Hill.png",
+        "Forest" => "assets/Forest.png",
+        "Field" => "assets/Field.png",
+        "Pasture" => "assets/Pasture.png",
         "Desert" => "assets/Desert.png",
         _ => throw new NotSupportedException()
       };
@@ -172,6 +212,26 @@ else
     }
 
     public int? Value { get; }
+
+    public string Image { get; }
+  }
+
+  public class HarborSpace
+  {
+    public HarborSpace(WaterSpace waterSpace)
+    {
+      Image = waterSpace.Type switch
+      {
+        "Mountain" => "assets/MountainHarbor.png",
+        "Hill" => "assets/HillHarbor.png",
+        "Forest" => "assets/ForestHarbor.png",
+        "Field" => "assets/FieldHarbor.png",
+        "Pasture" => "assets/PastureHarbor.png",
+        "Generic" => "assets/GenericHarbor.png",
+        null => "assets/NoHarbor.png",
+        _ => throw new NotSupportedException()
+      };
+    }
 
     public string Image { get; }
   }
