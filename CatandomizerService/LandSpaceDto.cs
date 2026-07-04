@@ -10,11 +10,11 @@ public class LandSpaceDto
   {
     return landType switch
     {
-      LandType.Mountain => "Ore / Mountain",
-      LandType.Hill => "Brick / Hill",
-      LandType.Forest => "Lumber / Forest",
-      LandType.Field => "Wheat / Field",
-      LandType.Pasture => "Sheep / Pasture",
+      LandType.Mountain => "Mountain",
+      LandType.Hill => "Hill",
+      LandType.Forest => "Forest",
+      LandType.Field => "Field",
+      LandType.Pasture => "Pasture",
       LandType.Desert => "Desert",
       _ => "Unknown"
     };

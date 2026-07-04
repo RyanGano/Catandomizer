@@ -1,5 +1,5 @@
 var AllowCatandomizerApp = "_allowCatandomizerApp";
-const string version = "0.0.1";
+const string version = "0.0.2";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +19,7 @@ app.UseCors();
 RouteGroupBuilder todoItems = app.MapGroup("/getboard");
 
 todoItems.MapGet("/", () => GetBoard(null)).RequireCors(AllowCatandomizerApp);
+todoItems.MapGet("/default", () => GetBoard(null, false)).RequireCors(AllowCatandomizerApp);
 todoItems.MapGet("/{id}", GetBoard).RequireCors(AllowCatandomizerApp);
 
 app.MapGet("/", GetStatus);
