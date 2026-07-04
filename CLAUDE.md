@@ -50,6 +50,22 @@ The app is hardcoded to call the deployed service at `https://catandomizerservic
 
 ### Client rendering (CatandomizerApp)
 
-- [Index.razor](CatandomizerApp/Pages/Index.razor) defines its own local DTO mirror classes (`BoardState`, `LandSpace`, `WaterSpace`) rather than sharing types with the service — keep both in sync manually if the service DTO shape changes.
-- Board layout is rendered as absolutely-positioned rows of hex images; `boardSpaces`/`harborSpaces` arrays are indexed directly into fixed pixel-offset markup, so the land/harbor space ordering returned by the service must match the indices the markup expects.
+- [Models/BoardModels.cs](CatandomizerApp/Models/BoardModels.cs) holds the client's own mirror of the wire format (`BoardState`, `LandSpace`, `WaterSpace`) plus the view models `BoardSpace`/`HarborSpace`. These are **not** shared with the service — keep them in sync manually if the service DTO shape changes. The land-type strings the client switches on (`"Mountain"`, `"Hill"`, …) must match what `LandSpaceDto` emits; the service deliberately sends plain land names (not `"Ore / Mountain"`).
+- `BoardSpace`/`HarborSpace` derive everything the UI needs from `Type`/`Value` in their constructors: the tile image, a resource emoji + name, `IsRed` (6/8), `PipCount` (roll probability), and harbor trade ratio (`2:1`/`3:1`). No service change is needed to add these — they are purely client-side.
+- Tiles are drawn by the [BoardTile](CatandomizerApp/Shared/BoardTile.razor) and [HarborTile](CatandomizerApp/Shared/HarborTile.razor) components, which layer the resource emoji, number token, and pip dots on top of the hex PNG (styles live in [wwwroot/css/app.css](CatandomizerApp/wwwroot/css/app.css)). A legend below the board maps each emoji to its resource/land and explains harbor ratios.
+- Board layout is rendered as absolutely-positioned rows in [Index.razor](CatandomizerApp/Pages/Index.razor); `boardSpaces`/`harborSpaces` arrays are indexed directly into fixed pixel-offset markup, so the land/harbor space ordering returned by the service must match the indices the markup expects. The board wrapper has an explicit height because its rows are absolutely positioned (otherwise following content overlaps it).
 - Land tile images map by `LandType` string to `wwwroot/assets/*.png`; harbor tiles similarly map by `HarborType` string to `*Harbor.png` assets (or `NoHarbor.png`).
+
+## Deployment
+
+Both projects deploy to Azure App Service (Windows) via GitHub Actions on push to `master`:
+
+| Project | App Service | URL | Workflow | Publish-profile secret |
+| --- | --- | --- | --- | --- |
+| CatandomizerService | `CatandomizerService` | catandomizerservice.azurewebsites.net | [.github/workflows/deploy-service.yml](.github/workflows/deploy-service.yml) | `AZURE_SERVICE_PUBLISH_PROFILE` |
+| CatandomizerApp | `Catandomizer` | catandomizer.azurewebsites.net | [.github/workflows/deploy-app.yml](.github/workflows/deploy-app.yml) | `AZURE_APP_PUBLISH_PROFILE` |
+
+- Each workflow is **path-filtered** to its own project, so editing one app does not redeploy the other. Both also support manual `workflow_dispatch` runs.
+- The Blazor app publishes to a folder containing `web.config` + `wwwroot/`; the whole folder is deployed to the site root and `web.config` rewrites requests into `wwwroot/`.
+- The service's CORS policy (`Program.cs`) must include the deployed app origin (`https://catandomizer.azurewebsites.net`) and the app's service URL (`Index.razor`) must point at the deployed service — update both if an App Service is renamed.
+- Secrets are set under GitHub repo **Settings → Secrets and variables → Actions**; get each publish profile from the Azure Portal App Service **Overview → Get publish profile**.

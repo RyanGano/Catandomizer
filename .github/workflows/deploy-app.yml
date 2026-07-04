@@ -1,0 +1,40 @@
+name: Deploy App
+
+# Deploys CatandomizerApp (Blazor WebAssembly client) to the Azure App
+# Service "Catandomizer". The publish output includes a web.config that
+# rewrites all requests into the wwwroot/ subfolder, so the whole publish
+# folder is deployed to the site root.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "CatandomizerApp/**"
+      - ".github/workflows/deploy-app.yml"
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+env:
+  AZURE_WEBAPP_NAME: Catandomizer
+  PROJECT_PATH: CatandomizerApp/CatandomizerApp.csproj
+  DOTNET_VERSION: "7.0.x"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_APP_PUBLISH_PROFILE }}
+          package: ${{ github.workspace }}/publish

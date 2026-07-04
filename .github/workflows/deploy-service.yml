@@ -1,0 +1,38 @@
+name: Deploy Service
+
+# Deploys CatandomizerService (ASP.NET Core minimal API) to the
+# Azure App Service "CatandomizerService".
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "CatandomizerService/**"
+      - ".github/workflows/deploy-service.yml"
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+env:
+  AZURE_WEBAPP_NAME: CatandomizerService
+  PROJECT_PATH: CatandomizerService/CatandomizerService.csproj
+  DOTNET_VERSION: "7.0.x"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish
+
+      - name: Deploy to Azure App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_SERVICE_PUBLISH_PROFILE }}
+          package: ${{ github.workspace }}/publish
