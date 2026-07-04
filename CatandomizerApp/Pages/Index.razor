@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @inject HttpClient Http
 
 <PageTitle>Catandomizer</PageTitle>
@@ -6,7 +6,8 @@
 <p>Build a random (valid) layout for Catan.</p>
 <p>
   <input placeholder="Layout Id" @bind="Id" />
-  <button @onclick="Recalculate">Recalculate</button>
+  <button @onclick="GetRandomizedLayout">Recalculate</button>
+  <button @onclick="GetBeginnderLayout">Beginner Layout</button>
 </p>
 
 @if (boardState is null || boardState.LandSpaces is null || boardSpaces is null || harborSpaces is null)
@@ -15,121 +16,99 @@
 }
 else
 {
-  <div>
+  <div style="position: relative; height: 900px; width: 820px">
     <div style="position:relative; top: 0px; left: 304.5px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[9].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[9]" /></div>
     </div>
 
     <div style="position:relative; top: 58.5px; left: 203.5px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[10].Image /></div>
-      <div style="position: absolute; left: 203px"><img src=@harborSpaces[8].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[10]" /></div>
+      <div style="position: absolute; left: 203px"><HarborTile Harbor="harborSpaces[8]" /></div>
     </div>
 
     <div style="position:relative; top: 117px; left: 101.5px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[11].Image /></div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[6].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[6].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@harborSpaces[7].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[11]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[6]" /></div>
+      <div style="position: absolute; left: 406px"><HarborTile Harbor="harborSpaces[7]" /></div>
     </div>
 
     <div style="position:relative; top: 175.5px; left: 0px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[12].Image /></div>
-      <div style=" position: absolute; left: 203px"><img src=@boardSpaces[7].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[7].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[5].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[5].Value</div>
-      </div>
-      <div style="position: absolute; left: 608px"><img src=@harborSpaces[6].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[12]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[7]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[5]" /></div>
+      <div style="position: absolute; left: 608px"><HarborTile Harbor="harborSpaces[6]" /></div>
     </div>
 
     <div style="position:relative; top: 234px; left: 101.5px">
-      <div style="position: absolute; left: 0px"><img src=@boardSpaces[8].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[8].Value</div>
-      </div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[15].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[15].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[4].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[4].Value</div>
-      </div>
+      <div style="position: absolute; left: 0px"><BoardTile Space="boardSpaces[8]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[15]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[4]" /></div>
     </div>
 
     <div style="position:relative; top: 292.5px; left: 0px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[13].Image /></div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[16].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[16].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[14].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[14].Value</div>
-      </div>
-      <div style="position: absolute; left: 608px"><img src=@harborSpaces[5].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[13]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[16]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[14]" /></div>
+      <div style="position: absolute; left: 608px"><HarborTile Harbor="harborSpaces[5]" /></div>
     </div>
 
     <div style="position:relative; top: 351px; left: 101.5px">
-      <div style="position: absolute; left: 0px"><img src=@boardSpaces[9].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[9].Value</div>
-      </div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[18].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[18].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[3].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[3].Value</div>
-      </div>
+      <div style="position: absolute; left: 0px"><BoardTile Space="boardSpaces[9]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[18]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[3]" /></div>
     </div>
 
     <div style="position:relative; top: 409.5px; left: 0px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[14].Image /></div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[17].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[17].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[13].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[13].Value</div>
-      </div>
-      <div style="position: absolute; left: 608px"><img src=@harborSpaces[4].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[14]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[17]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[13]" /></div>
+      <div style="position: absolute; left: 608px"><HarborTile Harbor="harborSpaces[4]" /></div>
     </div>
 
     <div style="position:relative; top: 468px; left: 101.5px">
-      <div style="position: absolute; left: 0px"><img src=@boardSpaces[10].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[10].Value</div>
-      </div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[12].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[12].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[2].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[2].Value</div>
-      </div>
+      <div style="position: absolute; left: 0px"><BoardTile Space="boardSpaces[10]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[12]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[2]" /></div>
     </div>
 
     <div style="position:relative; top: 526.5px; left: 0px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[15].Image /></div>
-      <div style="position: absolute; left: 203px"><img src=@boardSpaces[11].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[11].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@boardSpaces[1].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[1].Value</div>
-      </div>
-      <div style="position: absolute; left: 608px"><img src=@harborSpaces[3].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[15]" /></div>
+      <div style="position: absolute; left: 203px"><BoardTile Space="boardSpaces[11]" /></div>
+      <div style="position: absolute; left: 406px"><BoardTile Space="boardSpaces[1]" /></div>
+      <div style="position: absolute; left: 608px"><HarborTile Harbor="harborSpaces[3]" /></div>
     </div>
 
     <div style="position:relative; top: 585px; left: 101.5px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[16].Image /></div>
-      <div style="position: absolute; left:203px"><img src=@boardSpaces[0].Image />
-        <div style="position: relative; top: -71px; text-align: center">@boardSpaces[0].Value</div>
-      </div>
-      <div style="position: absolute; left: 406px"><img src=@harborSpaces[2].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[16]" /></div>
+      <div style="position: absolute; left:203px"><BoardTile Space="boardSpaces[0]" /></div>
+      <div style="position: absolute; left: 406px"><HarborTile Harbor="harborSpaces[2]" /></div>
     </div>
 
     <div style="position:relative; top: 643.5px; left: 203px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[17].Image /></div>
-      <div style="position: absolute; left: 203px"><img src=@harborSpaces[1].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[17]" /></div>
+      <div style="position: absolute; left: 203px"><HarborTile Harbor="harborSpaces[1]" /></div>
     </div>
 
     <div style="position:relative; top: 702px; left: 304.5px">
-      <div style="position: absolute; left: 0px"><img src=@harborSpaces[0].Image /></div>
+      <div style="position: absolute; left: 0px"><HarborTile Harbor="harborSpaces[0]" /></div>
     </div>
   </div>
+
+  <div class="legend">
+    <h3>Key</h3>
+    <div class="legend-grid">
+      @foreach (var item in s_legend)
+      {
+        <div class="legend-item">
+          <span class="legend-emoji">@item.Emoji</span>
+          <span><strong>@item.Resource</strong> <span class="legend-land">(@item.Land)</span></span>
+        </div>
+      }
+    </div>
+    <p class="legend-note"><span class="legend-red">&#9679;</span> Red numbers (6 &amp; 8) are rolled most often; more pips under a number means it comes up more.</p>
+    <p class="legend-note">⚓ Harbors: <strong>2:1</strong> trade for the shown resource, <strong>3:1</strong> for any resource (generic).</p>
+  </div>
+
   <div style="position: relative">ID = @boardState.Id</div>
 }
 
@@ -138,28 +117,37 @@ else
   private BoardSpace[]? boardSpaces;
   private HarborSpace[]? harborSpaces;
 
-  private const string c_padding = "padding: 15px;";
-  private const string c_border = "border: 5px solid";
-
   private string? Id;
 
-  private const string c_mountainStyle = $"{c_padding} {c_border} #a7a297";
-  private const string c_hillStyle = $"{c_padding} {c_border} #e90f0f";
-  private const string c_forestStyle = $"{c_padding} {c_border} #195d16";
-  private const string c_fieldStyle = $"{c_padding} {c_border} #e9d75d";
-  private const string c_pastureStyle = $"{c_padding} {c_border} #7fe17b";
-  private const string c_desertStyle = $"{c_padding} {c_border} #9e7213";
-  private const string c_emptyStyle = $"{c_padding} #ffffff";
+  private static readonly (string Emoji, string Resource, string Land)[] s_legend = new[]
+  {
+    ("🪨", "Ore", "Mountain"),
+    ("🧱", "Brick", "Hill"),
+    ("🌲", "Lumber", "Forest"),
+    ("🌾", "Grain", "Field"),
+    ("🐑", "Wool", "Pasture"),
+    ("🏜️", "Nothing", "Desert"),
+  };
 
-  private async Task Recalculate()
+  private async Task GetBeginnderLayout()
+  {
+    await RecalculateAsync(true);
+  }
+
+  private async Task GetRandomizedLayout()
+  {
+    await RecalculateAsync(false);
+  }
+
+  private async Task RecalculateAsync(bool getBeginnerLayout = false)
   {
     boardSpaces = null;
     boardState = null;
 
     // Local testing:
-    // var servicePath = "http://localhost:5149/getboard";
+    // var servicePath = "http://localhost:5149/getboard" + (getBeginnerLayout ? "/default" : "");
 
-    var servicePath = "https://catandomizerservice.azurewebsites.net/getboard";
+    var servicePath = "https://catandomizerservice.azurewebsites.net/getboard" + (getBeginnerLayout ? "/default" : "");
 
     if (Id is not null)
       servicePath += $"/{Id}";
@@ -171,68 +159,6 @@ else
 
   protected override async Task OnInitializedAsync()
   {
-    await Recalculate();
-  }
-
-  public class BoardState
-  {
-    public LandSpace[]? LandSpaces { get; set; }
-
-    public WaterSpace[]? WaterSpaces { get; set; }
-
-    public int Id { get; set; }
-  }
-
-  public class LandSpace
-  {
-    public string? Type { get; set; }
-    public int? Value { get; set; }
-  }
-
-  public class WaterSpace
-  {
-    public string? Type { get; set; }
-  }
-
-  public class BoardSpace
-  {
-    public BoardSpace(LandSpace landSpace)
-    {
-      Image = landSpace.Type switch
-      {
-        "Mountain" => "assets/Mountain.png",
-        "Hill" => "assets/Hill.png",
-        "Forest" => "assets/Forest.png",
-        "Field" => "assets/Field.png",
-        "Pasture" => "assets/Pasture.png",
-        "Desert" => "assets/Desert.png",
-        _ => throw new NotSupportedException()
-      };
-      Value = landSpace?.Value;
-    }
-
-    public int? Value { get; }
-
-    public string Image { get; }
-  }
-
-  public class HarborSpace
-  {
-    public HarborSpace(WaterSpace waterSpace)
-    {
-      Image = waterSpace.Type switch
-      {
-        "Mountain" => "assets/MountainHarbor.png",
-        "Hill" => "assets/HillHarbor.png",
-        "Forest" => "assets/ForestHarbor.png",
-        "Field" => "assets/FieldHarbor.png",
-        "Pasture" => "assets/PastureHarbor.png",
-        "Generic" => "assets/GenericHarbor.png",
-        null => "assets/NoHarbor.png",
-        _ => throw new NotSupportedException()
-      };
-    }
-
-    public string Image { get; }
+    await RecalculateAsync();
   }
 }

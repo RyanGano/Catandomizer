@@ -26,6 +26,131 @@ a, .btn-link {
     padding-top: 1.1rem;
 }
 
+/* Board tiles: emoji + number token overlays sit on top of the hex image */
+.tile {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+}
+
+.tile-resource {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 22px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.tile-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    color: #1a1a1a;
+    pointer-events: none;
+}
+
+.tile-number.red {
+    color: #c1121f;
+}
+
+.tile-pips {
+    position: absolute;
+    top: 66%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 3px;
+    pointer-events: none;
+}
+
+.tile-pips .pip {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+}
+
+.tile-pips .pip.red {
+    background-color: #c1121f;
+}
+
+/* Harbor tiles: trade ratio + resource emoji over the center circle */
+.harbor-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.harbor-ratio {
+    font-size: 13px;
+    font-weight: bold;
+    color: #1a1a1a;
+}
+
+.harbor-resource {
+    font-size: 16px;
+    margin-top: 1px;
+}
+
+/* Legend / key */
+.legend {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    max-width: 640px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fafafa;
+}
+
+.legend h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.35rem 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-emoji {
+    font-size: 20px;
+    width: 1.5rem;
+    text-align: center;
+}
+
+.legend-land {
+    color: #666;
+}
+
+.legend-note {
+    margin: 0.6rem 0 0 0;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.legend-red {
+    color: #c1121f;
+}
+
 .valid.modified:not([type=checkbox]) {
     outline: 1px solid #26b050;
 }

@@ -1,0 +1,19 @@
+<div class="tile">
+  <img src="@Harbor.Image" />
+
+  @if (Harbor.IsHarbor)
+  {
+    <div class="harbor-overlay">
+      <div class="harbor-ratio">@Harbor.RatioText</div>
+      @if (!string.IsNullOrEmpty(Harbor.ResourceEmoji))
+      {
+        <div class="harbor-resource">@Harbor.ResourceEmoji</div>
+      }
+    </div>
+  }
+</div>
+
+@code {
+  [Parameter, EditorRequired]
+  public HarborSpace Harbor { get; set; } = default!;
+}

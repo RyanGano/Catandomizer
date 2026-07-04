@@ -1,0 +1,21 @@
+<div class="tile">
+  <img src="@Space.Image" />
+
+  <div class="tile-resource">@Space.ResourceEmoji</div>
+
+  @if (Space.Value is int value)
+  {
+    <div class="tile-number @(Space.IsRed ? "red" : "")">@value</div>
+    <div class="tile-pips">
+      @for (var i = 0; i < Space.PipCount; i++)
+      {
+        <span class="pip @(Space.IsRed ? "red" : "")"></span>
+      }
+    </div>
+  }
+</div>
+
+@code {
+  [Parameter, EditorRequired]
+  public BoardSpace Space { get; set; } = default!;
+}
