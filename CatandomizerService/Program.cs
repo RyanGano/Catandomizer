@@ -27,10 +27,29 @@ app.MapGet("/", GetStatus);
 
 app.Run();
 
-static async Task<IResult> GetBoard(int? id, bool randomValues = true)
+static async Task<IResult> GetBoard(string? id, bool randomValues = true)
 {
-  var result = await BoardState.CreateAsync(id, randomValues);
-  return TypedResults.Ok(new BoardStateDto(result));
+  try
+  {
+    // Accept either a legacy integer seed or a board code produced by BoardCode.
+    BoardState result;
+    if (id is null)
+      result = await BoardState.CreateAsync(null, randomValues);
+    else if (int.TryParse(id, out var seed) && seed >= 0)
+      result = await BoardState.CreateAsync(seed, randomValues);
+    else
+      result = BoardState.CreateFromCode(id);
+
+    return TypedResults.Ok(new BoardStateDto(result));
+  }
+  catch (FormatException e)
+  {
+    return TypedResults.BadRequest(e.Message);
+  }
+  catch (InvalidDataException)
+  {
+    return TypedResults.BadRequest("Board code decodes to an invalid board layout.");
+  }
 }
 
 static IResult GetStatus()

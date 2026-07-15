@@ -11,41 +11,62 @@ public class BoardState
 
     await Task.Run(() =>
     {
-      for (int i = 0; i < landSpaces.Length; i++)
-      {
-        var tile = tiles[i];
-        LandValue? landValue = null;
-
-        landSpaces[i] = (new LandSpace(tile, landValue, i));
-      }
-
-      AddConnections(landSpaces[0], new[] { landSpaces[1], landSpaces[12], landSpaces[11] });
-      AddConnections(landSpaces[1], new[] { landSpaces[2], landSpaces[13], landSpaces[12], landSpaces[0] });
-      AddConnections(landSpaces[2], new[] { landSpaces[3], landSpaces[13], landSpaces[1] });
-      AddConnections(landSpaces[3], new[] { landSpaces[4], landSpaces[14], landSpaces[13], landSpaces[2] });
-      AddConnections(landSpaces[4], new[] { landSpaces[5], landSpaces[14], landSpaces[3] });
-      AddConnections(landSpaces[5], new[] { landSpaces[6], landSpaces[15], landSpaces[14], landSpaces[4] });
-      AddConnections(landSpaces[6], new[] { landSpaces[7], landSpaces[15], landSpaces[5] });
-      AddConnections(landSpaces[7], new[] { landSpaces[8], landSpaces[16], landSpaces[15], landSpaces[6] });
-      AddConnections(landSpaces[8], new[] { landSpaces[9], landSpaces[16], landSpaces[7] });
-      AddConnections(landSpaces[9], new[] { landSpaces[10], landSpaces[17], landSpaces[16], landSpaces[8] });
-      AddConnections(landSpaces[10], new[] { landSpaces[11], landSpaces[17], landSpaces[9] });
-      AddConnections(landSpaces[11], new[] { landSpaces[0], landSpaces[12], landSpaces[17], landSpaces[10] });
-      AddConnections(landSpaces[12], new[] { landSpaces[0], landSpaces[1], landSpaces[13], landSpaces[18], landSpaces[17], landSpaces[11] });
-      AddConnections(landSpaces[13], new[] { landSpaces[1], landSpaces[2], landSpaces[3], landSpaces[14], landSpaces[18], landSpaces[12] });
-      AddConnections(landSpaces[14], new[] { landSpaces[13], landSpaces[3], landSpaces[4], landSpaces[5], landSpaces[15], landSpaces[18] });
-      AddConnections(landSpaces[15], new[] { landSpaces[18], landSpaces[14], landSpaces[5], landSpaces[6], landSpaces[7], landSpaces[16] });
-      AddConnections(landSpaces[16], new[] { landSpaces[17], landSpaces[18], landSpaces[15], landSpaces[7], landSpaces[8], landSpaces[9] });
-      AddConnections(landSpaces[17], new[] { landSpaces[11], landSpaces[12], landSpaces[18], landSpaces[16], landSpaces[9], landSpaces[10] });
-      AddConnections(landSpaces[18], new[] { landSpaces[12], landSpaces[13], landSpaces[14], landSpaces[15], landSpaces[16], landSpaces[17] });
-
+      landSpaces = BuildConnectedLandSpaces(tiles);
       AddLandValues(landSpaces, values);
     });
 
 
     var waterSpaces = (shuffleValues ? (await ShuffleAsync(m_harborTypes, random)) : m_harborTypes).SelectMany(x => new[] { new WaterSpace(x), new WaterSpace(null) }).ToArray();
 
-    return new BoardState(landSpaces, waterSpaces, shuffleValues ? seed.Value.ToString() : "Default");
+    return new BoardState(landSpaces, waterSpaces, BoardCode.Encode(landSpaces, waterSpaces));
+  }
+
+  public static BoardState CreateFromCode(string code)
+  {
+    var (_, landTypes, values, harbors) = BoardCode.Decode(code);
+
+    var landSpaces = BuildConnectedLandSpaces(landTypes);
+
+    int valueIndex = 0;
+    foreach (var space in landSpaces.Where(x => x.LandType != LandType.Desert))
+    {
+      var value = values[valueIndex++];
+      space.LandValue = new LandValue(value, value == 6 || value == 8);
+    }
+
+    var waterSpaces = harbors.SelectMany(x => new[] { new WaterSpace(x), new WaterSpace(null) }).ToArray();
+
+    return new BoardState(landSpaces, waterSpaces, code);
+  }
+
+  private static LandSpace[] BuildConnectedLandSpaces(IReadOnlyList<LandType> tiles)
+  {
+    var landSpaces = new LandSpace[19];
+
+    for (int i = 0; i < landSpaces.Length; i++)
+      landSpaces[i] = new LandSpace(tiles[i], null, i);
+
+    AddConnections(landSpaces[0], new[] { landSpaces[1], landSpaces[12], landSpaces[11] });
+    AddConnections(landSpaces[1], new[] { landSpaces[2], landSpaces[13], landSpaces[12], landSpaces[0] });
+    AddConnections(landSpaces[2], new[] { landSpaces[3], landSpaces[13], landSpaces[1] });
+    AddConnections(landSpaces[3], new[] { landSpaces[4], landSpaces[14], landSpaces[13], landSpaces[2] });
+    AddConnections(landSpaces[4], new[] { landSpaces[5], landSpaces[14], landSpaces[3] });
+    AddConnections(landSpaces[5], new[] { landSpaces[6], landSpaces[15], landSpaces[14], landSpaces[4] });
+    AddConnections(landSpaces[6], new[] { landSpaces[7], landSpaces[15], landSpaces[5] });
+    AddConnections(landSpaces[7], new[] { landSpaces[8], landSpaces[16], landSpaces[15], landSpaces[6] });
+    AddConnections(landSpaces[8], new[] { landSpaces[9], landSpaces[16], landSpaces[7] });
+    AddConnections(landSpaces[9], new[] { landSpaces[10], landSpaces[17], landSpaces[16], landSpaces[8] });
+    AddConnections(landSpaces[10], new[] { landSpaces[11], landSpaces[17], landSpaces[9] });
+    AddConnections(landSpaces[11], new[] { landSpaces[0], landSpaces[12], landSpaces[17], landSpaces[10] });
+    AddConnections(landSpaces[12], new[] { landSpaces[0], landSpaces[1], landSpaces[13], landSpaces[18], landSpaces[17], landSpaces[11] });
+    AddConnections(landSpaces[13], new[] { landSpaces[1], landSpaces[2], landSpaces[3], landSpaces[14], landSpaces[18], landSpaces[12] });
+    AddConnections(landSpaces[14], new[] { landSpaces[13], landSpaces[3], landSpaces[4], landSpaces[5], landSpaces[15], landSpaces[18] });
+    AddConnections(landSpaces[15], new[] { landSpaces[18], landSpaces[14], landSpaces[5], landSpaces[6], landSpaces[7], landSpaces[16] });
+    AddConnections(landSpaces[16], new[] { landSpaces[17], landSpaces[18], landSpaces[15], landSpaces[7], landSpaces[8], landSpaces[9] });
+    AddConnections(landSpaces[17], new[] { landSpaces[11], landSpaces[12], landSpaces[18], landSpaces[16], landSpaces[9], landSpaces[10] });
+    AddConnections(landSpaces[18], new[] { landSpaces[12], landSpaces[13], landSpaces[14], landSpaces[15], landSpaces[16], landSpaces[17] });
+
+    return landSpaces;
   }
 
   private static void AddLandValues(LandSpace[] spaces, LandValue[] values)
@@ -145,6 +166,11 @@ public class BoardState
   public IReadOnlyList<WaterSpace> WaterSpaces { get; }
 
   public string Seed { get; }
+
+  // Canonical distributions for the base game; BoardCode validates decoded boards against these.
+  internal static IReadOnlyList<LandValue> DefaultLandValues => m_landValues;
+  internal static IReadOnlyList<LandType> DefaultLandTypes => m_landTypes;
+  internal static IReadOnlyList<HarborType> DefaultHarborTypes => m_harborTypes;
 
   private static readonly List<LandValue> m_landValues = new[]
   {
