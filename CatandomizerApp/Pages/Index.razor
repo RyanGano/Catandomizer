@@ -1,5 +1,8 @@
 @page "/"
+@page "/{Code}"
 @inject HttpClient Http
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <PageTitle>Catandomizer</PageTitle>
 
@@ -8,6 +11,11 @@
   <input placeholder="Layout Id" @bind="Id" />
   <button @onclick="GetRandomizedLayout">Recalculate</button>
   <button @onclick="GetBeginnderLayout">Beginner Layout</button>
+  <button @onclick="ShareLink" disabled="@(boardState is null)">Share</button>
+  @if (linkCopied)
+  {
+    <span> Link copied!</span>
+  }
 </p>
 
 @if (boardState is null || boardState.LandSpaces is null || boardSpaces is null || harborSpaces is null)
@@ -116,8 +124,12 @@ else
   private BoardState? boardState;
   private BoardSpace[]? boardSpaces;
   private HarborSpace[]? harborSpaces;
+  private bool linkCopied;
 
   private string? Id;
+
+  [Parameter]
+  public string? Code { get; set; }
 
   private static readonly (string Emoji, string Resource, string Land)[] s_legend = new[]
   {
@@ -159,6 +171,23 @@ else
 
   protected override async Task OnInitializedAsync()
   {
+    if (!string.IsNullOrEmpty(Code))
+      Id = Code;
+
     await RecalculateAsync();
+  }
+
+  private async Task ShareLink()
+  {
+    if (boardState?.Id is null)
+      return;
+
+    var link = $"{Nav.BaseUri}{boardState.Id}";
+    await JS.InvokeVoidAsync("navigator.clipboard.writeText", link);
+
+    linkCopied = true;
+    StateHasChanged();
+    await Task.Delay(2000);
+    linkCopied = false;
   }
 }
