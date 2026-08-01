@@ -27,7 +27,13 @@ dotnet run                 # serves on http://localhost:5052 (see launchSettings
 dotnet build
 ```
 
-The app is hardcoded to call the deployed service at `https://catandomizerservice.azurewebsites.net/getboard` (see [Index.razor](CatandomizerApp/Pages/Index.razor)). To test against a local service instance, uncomment the `localhost:5149` line in `RecalculateAsync` and comment out the production URL.
+The app reaches the service through the typed `BoardService` client, whose base address comes from `BoardService:BaseAddress` in [wwwroot/appsettings.json](CatandomizerApp/wwwroot/appsettings.json) — it defaults to the deployed service. To test against a local service instance, add `CatandomizerApp/wwwroot/appsettings.Development.json`:
+
+```json
+{ "BoardService": { "BaseAddress": "http://localhost:5149/" } }
+```
+
+Blazor WebAssembly loads `appsettings.{Environment}.json` over `appsettings.json`, and `dotnet run` uses the Development environment, so no source edit is needed.
 
 ## Architecture
 
@@ -67,5 +73,5 @@ Both projects deploy to Azure App Service (Windows) via GitHub Actions on push t
 
 - Each workflow is **path-filtered** to its own project, so editing one app does not redeploy the other. Both also support manual `workflow_dispatch` runs.
 - The Blazor app publishes to a folder containing `web.config` + `wwwroot/`; the whole folder is deployed to the site root and `web.config` rewrites requests into `wwwroot/`.
-- The service's CORS policy (`Program.cs`) must include the deployed app origin (`https://catandomizer.azurewebsites.net`) and the app's service URL (`Index.razor`) must point at the deployed service — update both if an App Service is renamed.
+- The service's CORS policy (`Program.cs`) must include the deployed app origin (`https://catandomizer.azurewebsites.net`) and the app's `BoardService:BaseAddress` (`wwwroot/appsettings.json`) must point at the deployed service — update both if an App Service is renamed.
 - Secrets are set under GitHub repo **Settings → Secrets and variables → Actions**; get each publish profile from the Azure Portal App Service **Overview → Get publish profile**.

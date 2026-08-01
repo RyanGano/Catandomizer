@@ -6,6 +6,9 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+var boardServiceBaseAddress = builder.Configuration["BoardService:BaseAddress"]
+  ?? throw new InvalidOperationException("BoardService:BaseAddress is not configured (see wwwroot/appsettings.json).");
+
+builder.Services.AddHttpClient<BoardService>(client => client.BaseAddress = new Uri(boardServiceBaseAddress));
 
 await builder.Build().RunAsync();
