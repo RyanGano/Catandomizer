@@ -46,25 +46,25 @@ public class BoardState
     for (int i = 0; i < landSpaces.Length; i++)
       landSpaces[i] = new LandSpace(tiles[i], null, i);
 
-    AddConnections(landSpaces[0], new[] { landSpaces[1], landSpaces[12], landSpaces[11] });
-    AddConnections(landSpaces[1], new[] { landSpaces[2], landSpaces[13], landSpaces[12], landSpaces[0] });
-    AddConnections(landSpaces[2], new[] { landSpaces[3], landSpaces[13], landSpaces[1] });
-    AddConnections(landSpaces[3], new[] { landSpaces[4], landSpaces[14], landSpaces[13], landSpaces[2] });
-    AddConnections(landSpaces[4], new[] { landSpaces[5], landSpaces[14], landSpaces[3] });
-    AddConnections(landSpaces[5], new[] { landSpaces[6], landSpaces[15], landSpaces[14], landSpaces[4] });
-    AddConnections(landSpaces[6], new[] { landSpaces[7], landSpaces[15], landSpaces[5] });
-    AddConnections(landSpaces[7], new[] { landSpaces[8], landSpaces[16], landSpaces[15], landSpaces[6] });
-    AddConnections(landSpaces[8], new[] { landSpaces[9], landSpaces[16], landSpaces[7] });
-    AddConnections(landSpaces[9], new[] { landSpaces[10], landSpaces[17], landSpaces[16], landSpaces[8] });
-    AddConnections(landSpaces[10], new[] { landSpaces[11], landSpaces[17], landSpaces[9] });
-    AddConnections(landSpaces[11], new[] { landSpaces[0], landSpaces[12], landSpaces[17], landSpaces[10] });
-    AddConnections(landSpaces[12], new[] { landSpaces[0], landSpaces[1], landSpaces[13], landSpaces[18], landSpaces[17], landSpaces[11] });
-    AddConnections(landSpaces[13], new[] { landSpaces[1], landSpaces[2], landSpaces[3], landSpaces[14], landSpaces[18], landSpaces[12] });
-    AddConnections(landSpaces[14], new[] { landSpaces[13], landSpaces[3], landSpaces[4], landSpaces[5], landSpaces[15], landSpaces[18] });
-    AddConnections(landSpaces[15], new[] { landSpaces[18], landSpaces[14], landSpaces[5], landSpaces[6], landSpaces[7], landSpaces[16] });
-    AddConnections(landSpaces[16], new[] { landSpaces[17], landSpaces[18], landSpaces[15], landSpaces[7], landSpaces[8], landSpaces[9] });
-    AddConnections(landSpaces[17], new[] { landSpaces[11], landSpaces[12], landSpaces[18], landSpaces[16], landSpaces[9], landSpaces[10] });
-    AddConnections(landSpaces[18], new[] { landSpaces[12], landSpaces[13], landSpaces[14], landSpaces[15], landSpaces[16], landSpaces[17] });
+    AddConnections(landSpaces[0], [landSpaces[1], landSpaces[12], landSpaces[11]]);
+    AddConnections(landSpaces[1], [landSpaces[2], landSpaces[13], landSpaces[12], landSpaces[0]]);
+    AddConnections(landSpaces[2], [landSpaces[3], landSpaces[13], landSpaces[1]]);
+    AddConnections(landSpaces[3], [landSpaces[4], landSpaces[14], landSpaces[13], landSpaces[2]]);
+    AddConnections(landSpaces[4], [landSpaces[5], landSpaces[14], landSpaces[3]]);
+    AddConnections(landSpaces[5], [landSpaces[6], landSpaces[15], landSpaces[14], landSpaces[4]]);
+    AddConnections(landSpaces[6], [landSpaces[7], landSpaces[15], landSpaces[5]]);
+    AddConnections(landSpaces[7], [landSpaces[8], landSpaces[16], landSpaces[15], landSpaces[6]]);
+    AddConnections(landSpaces[8], [landSpaces[9], landSpaces[16], landSpaces[7]]);
+    AddConnections(landSpaces[9], [landSpaces[10], landSpaces[17], landSpaces[16], landSpaces[8]]);
+    AddConnections(landSpaces[10], [landSpaces[11], landSpaces[17], landSpaces[9]]);
+    AddConnections(landSpaces[11], [landSpaces[0], landSpaces[12], landSpaces[17], landSpaces[10]]);
+    AddConnections(landSpaces[12], [landSpaces[0], landSpaces[1], landSpaces[13], landSpaces[18], landSpaces[17], landSpaces[11]]);
+    AddConnections(landSpaces[13], [landSpaces[1], landSpaces[2], landSpaces[3], landSpaces[14], landSpaces[18], landSpaces[12]]);
+    AddConnections(landSpaces[14], [landSpaces[13], landSpaces[3], landSpaces[4], landSpaces[5], landSpaces[15], landSpaces[18]]);
+    AddConnections(landSpaces[15], [landSpaces[18], landSpaces[14], landSpaces[5], landSpaces[6], landSpaces[7], landSpaces[16]]);
+    AddConnections(landSpaces[16], [landSpaces[17], landSpaces[18], landSpaces[15], landSpaces[7], landSpaces[8], landSpaces[9]]);
+    AddConnections(landSpaces[17], [landSpaces[11], landSpaces[12], landSpaces[18], landSpaces[16], landSpaces[9], landSpaces[10]]);
+    AddConnections(landSpaces[18], [landSpaces[12], landSpaces[13], landSpaces[14], landSpaces[15], landSpaces[16], landSpaces[17]]);
 
     return landSpaces;
   }
@@ -172,8 +172,7 @@ public class BoardState
   internal static IReadOnlyList<LandType> DefaultLandTypes => m_landTypes;
   internal static IReadOnlyList<HarborType> DefaultHarborTypes => m_harborTypes;
 
-  private static readonly List<LandValue> m_landValues = new[]
-  {
+  private static readonly List<LandValue> m_landValues = [
     new LandValue(5, false),
     new LandValue(6, true),
     new LandValue(11, false),
@@ -192,10 +191,9 @@ public class BoardState
     new LandValue(4, false),
     new LandValue(6, true),
     new LandValue(11, false),
-  }.ToList();
+  ];
 
-  private static readonly List<LandType> m_landTypes = new[]
-  {
+  private static readonly List<LandType> m_landTypes = [
     LandType.Hill,
     LandType.Field,
     LandType.Pasture,
@@ -215,10 +213,9 @@ public class BoardState
     LandType.Hill,
     LandType.Forest,
     LandType.Desert,
-  }.ToList();
+  ];
 
-  private static readonly List<HarborType> m_harborTypes = new[]
-  {
+  private static readonly List<HarborType> m_harborTypes = [
     HarborType.Generic,
     HarborType.Generic,
     HarborType.Pasture,
@@ -228,5 +225,5 @@ public class BoardState
     HarborType.Generic,
     HarborType.Forest,
     HarborType.Hill,
-  }.ToList();
+  ];
 }
