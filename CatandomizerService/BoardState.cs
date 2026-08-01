@@ -31,7 +31,7 @@ public class BoardState
     foreach (var space in landSpaces.Where(x => x.LandType != LandType.Desert))
     {
       var value = values[valueIndex++];
-      space.LandValue = new LandValue(value, value == 6 || value == 8);
+      space.LandValue = new LandValue(value, value is 6 or 8);
     }
 
     var waterSpaces = harbors.SelectMany(x => new[] { new WaterSpace(x), new WaterSpace(null) }).ToArray();
