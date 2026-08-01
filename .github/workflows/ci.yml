@@ -1,0 +1,44 @@
+name: CI
+
+# Builds both projects on pull requests and on pushes to master. The repo
+# has no automated tests, so this verifies compilation only.
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch: # allow manual runs from the Actions tab
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_VERSION: "10.0.x"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - CatandomizerService/CatandomizerService.csproj
+          - CatandomizerApp/CatandomizerApp.csproj
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore ${{ matrix.project }}
+
+      - name: Build
+        run: dotnet build ${{ matrix.project }} -c Release --no-restore
