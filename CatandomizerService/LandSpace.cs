@@ -18,6 +18,6 @@ public class LandSpace(LandType landType, LandValue? landValue, int id)
 
   public LandType LandType { get; } = landType;
   public LandValue? LandValue { get; set; } = landValue;
-  public List<LandSpace> ConnectedSpaces { get; } = new List<LandSpace>();
+  public List<LandSpace> ConnectedSpaces { get; } = [];
   public int Id { get; } = id;
 }
