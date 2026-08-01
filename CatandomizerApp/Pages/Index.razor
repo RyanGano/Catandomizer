@@ -1,6 +1,6 @@
 @page "/"
 @page "/{Code}"
-@inject HttpClient Http
+@inject BoardService Boards
 @inject NavigationManager Nav
 @inject IJSRuntime JS
 
@@ -156,15 +156,7 @@ else
     boardSpaces = null;
     boardState = null;
 
-    // Local testing:
-    // var servicePath = "http://localhost:5149/getboard" + (getBeginnerLayout ? "/default" : "");
-
-    var servicePath = "https://catandomizerservice.azurewebsites.net/getboard" + (getBeginnerLayout ? "/default" : "");
-
-    if (Id is not null)
-      servicePath += $"/{Id}";
-
-    boardState = await Http.GetFromJsonAsync<BoardState>(servicePath);
+    boardState = await Boards.GetBoardAsync(Id, getBeginnerLayout);
     boardSpaces = boardState!.LandSpaces!.Select(x => new BoardSpace(x)).ToArray();
     harborSpaces = boardState!.WaterSpaces!.Select(x => new HarborSpace(x)).ToArray();
   }
