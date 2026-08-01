@@ -14,7 +14,7 @@ on:
 env:
   AZURE_WEBAPP_NAME: CatandomizerService
   PROJECT_PATH: CatandomizerService/CatandomizerService.csproj
-  DOTNET_VERSION: "7.0.x"
+  DOTNET_VERSION: "10.0.x"
 
 jobs:
   build-and-deploy:
