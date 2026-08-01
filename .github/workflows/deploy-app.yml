@@ -13,6 +13,11 @@ on:
       - ".github/workflows/deploy-app.yml"
   workflow_dispatch: # allow manual runs from the Actions tab
 
+# The deploy authenticates with a publish profile, so no GITHUB_TOKEN
+# scope beyond reading the repo is required.
+permissions:
+  contents: read
+
 env:
   AZURE_WEBAPP_NAME: Catandomizer
   PROJECT_PATH: CatandomizerApp/CatandomizerApp.csproj
