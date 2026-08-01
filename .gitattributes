@@ -1,0 +1,4 @@
+# Shell scripts run on the Linux CI runners; a CRLF checkout breaks them with
+# "bash: \r: command not found". Git normalizes to LF in the index anyway, but
+# this makes it explicit and survives a stray core.autocrlf setting.
+*.sh text eol=lf
