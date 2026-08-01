@@ -1,0 +1,204 @@
+name: PR Preview
+
+# Publishes the Blazor app from each open pull request to GitHub Pages so the
+# change can be played with before it merges, and posts the link on the PR.
+#
+# Previews live at https://ryangano.github.io/Catandomizer/pr-preview/pr-<n>/,
+# with a landing page at the Pages root listing every live preview. Everything
+# is served off the `gh-pages` branch, which this workflow owns end to end --
+# nothing else should commit to it.
+#
+# The App Service plan is Free (F1), which has no deployment slots, so a
+# staging site the way the deploy workflows do it is not available. GitHub
+# Pages costs nothing and gives every PR its own hostname path, and because
+# they all share the ryangano.github.io *origin*, a single CORS entry in
+# CatandomizerService/Program.cs covers all of them at once.
+#
+# Only the client is previewed. Previews call the deployed production service,
+# so a PR that changes CatandomizerService is not testable here.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+    branches: [master]
+    paths:
+      - "CatandomizerApp/**"
+      - ".github/workflows/pr-preview.yml"
+      - ".github/scripts/build-preview-index.sh"
+
+# Every job here pushes to the same gh-pages branch, so they are serialized
+# repo-wide rather than per-PR -- two PRs deploying at once would race on the
+# push. cancel-in-progress is false so a queued run still gets to publish (and
+# so a cleanup is never dropped on the floor).
+concurrency:
+  group: pr-preview-pages
+  cancel-in-progress: false
+
+env:
+  PROJECT_PATH: CatandomizerApp/CatandomizerApp.csproj
+  DOTNET_VERSION: "10.0.x"
+
+jobs:
+  deploy:
+    name: Publish preview
+    # Fork PRs get a read-only token and cannot push to gh-pages; skip rather
+    # than fail loudly on a permissions error.
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the built preview to gh-pages
+      pull-requests: write # post/update the preview link comment
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish
+
+      - name: Rebase the app onto its preview path
+        env:
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          ROOT="${{ github.workspace }}/publish/wwwroot"
+          # Blazor resolves every asset against <base href>, which the app ships
+          # as "/" for a site root. On Pages the app is served from a
+          # subdirectory, so it has to point there instead.
+          sed -i "s|<base href=\"/\" />|<base href=\"/Catandomizer/pr-preview/pr-${PR}/\" />|" "$ROOT/index.html"
+          grep -q "pr-preview/pr-${PR}/" "$ROOT/index.html" # fail loudly if the base href markup ever changes
+          # Index.razor serves @page "/{Code}", so shared board links are deep
+          # links. Pages has no SPA rewrite; serving index.html as the
+          # directory's 404 is the standard stand-in for one.
+          cp "$ROOT/index.html" "$ROOT/404.html"
+
+      - name: Check out gh-pages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git init -q gh-pages
+          cd gh-pages
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          if git fetch -q --depth=1 origin gh-pages; then
+            git checkout -q -B gh-pages FETCH_HEAD
+          else
+            # First run: the branch does not exist yet.
+            git checkout -q --orphan gh-pages
+          fi
+
+      - name: Stage the preview
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd gh-pages
+          rm -rf "pr-preview/pr-${PR}"
+          mkdir -p "pr-preview/pr-${PR}"
+          cp -r "${{ github.workspace }}/publish/wwwroot/." "pr-preview/pr-${PR}/"
+          # Jekyll skips directories starting with an underscore, which would
+          # swallow the whole of _framework/.
+          touch .nojekyll
+          bash "${{ github.workspace }}/.github/scripts/build-preview-index.sh"
+
+      - name: Commit and push
+        env:
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Preview unchanged; nothing to push."
+          else
+            git commit -q -m "Preview for PR #${PR} (${GITHUB_SHA::7})"
+            git push -q origin gh-pages
+          fi
+
+      - name: Post or update the preview link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          MARKER='<!-- pr-preview-url -->'
+          URL="https://ryangano.github.io/Catandomizer/pr-preview/pr-${PR}/"
+          BODY="$MARKER
+          ### Preview build
+
+          $URL
+
+          Built from this branch and redeployed on every push. It talks to the
+          **production** board service, so changes to \`CatandomizerService\` in this
+          PR are not reflected. The preview is deleted when this PR closes; every
+          live preview is listed at
+          https://ryangano.github.io/Catandomizer/.
+
+          _GitHub Pages can take a minute to serve a fresh deploy._"
+          ID=$(gh api "repos/$REPO/issues/$PR/comments" --paginate \
+                 --jq "map(select(.body | startswith(\"$MARKER\"))) | .[0].id // empty")
+          if [ -n "$ID" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$ID" -f body="$BODY" >/dev/null
+            echo "Updated comment $ID"
+          else
+            gh api --method POST "repos/$REPO/issues/$PR/comments" -f body="$BODY" >/dev/null
+            echo "Created preview comment"
+          fi
+
+  cleanup:
+    name: Remove preview
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      # Only the index script is needed here, but a full checkout keeps the
+      # step simple and costs nothing.
+      - uses: actions/checkout@v7
+
+      - name: Check out gh-pages
+        id: checkout
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git init -q gh-pages
+          cd gh-pages
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          if git fetch -q --depth=1 origin gh-pages; then
+            git checkout -q -B gh-pages FETCH_HEAD
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Drop the preview and refresh the landing page
+        if: steps.checkout.outputs.exists == 'true'
+        env:
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          cd gh-pages
+          rm -rf "pr-preview/pr-${PR}"
+          bash "${{ github.workspace }}/.github/scripts/build-preview-index.sh"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No preview to remove."
+          else
+            git commit -q -m "Remove preview for PR #${PR}"
+            git push -q origin gh-pages
+          fi

@@ -10,6 +10,10 @@ builder.Services.AddCors(options =>
                     {
                       policy.WithOrigins("http://localhost:5052");
                       policy.WithOrigins("https://catandomizer.azurewebsites.net");
+                      // Every PR preview build is served from a path under this
+                      // one GitHub Pages origin, so this single entry covers all
+                      // of them (see .github/workflows/pr-preview.yml).
+                      policy.WithOrigins("https://ryangano.github.io");
                     });
 });
 
