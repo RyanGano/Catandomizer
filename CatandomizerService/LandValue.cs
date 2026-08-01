@@ -1,11 +1,5 @@
-public class LandValue
+public class LandValue(int value, bool isRed)
 {
-  public LandValue(int value, bool isRed)
-  {
-    Value = value;
-    IsRed = isRed;
-  }
-
   public bool CanBeNextTo(LandValue? other) => other is null || (this.Value != other.Value && (!this.IsRed || !other.IsRed));
 
   public override string ToString()
@@ -13,6 +7,6 @@ public class LandValue
     return $"Value: {Value} / Red: {IsRed}";
   }
 
-  public int Value { get; }
-  bool IsRed { get; }
+  public int Value { get; } = value;
+  bool IsRed { get; } = isRed;
 }

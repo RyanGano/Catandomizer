@@ -121,12 +121,10 @@ public static class BoardCode
     return crc;
   }
 
-  private class BitWriter
+  private class BitWriter(int byteLength)
   {
-    private readonly byte[] m_bytes;
+    private readonly byte[] m_bytes = new byte[byteLength];
     private int m_bitPosition;
-
-    public BitWriter(int byteLength) => m_bytes = new byte[byteLength];
 
     public void Write(int value, int bitCount)
     {
@@ -141,12 +139,10 @@ public static class BoardCode
     public byte[] ToArray() => m_bytes;
   }
 
-  private class BitReader
+  private class BitReader(byte[] bytes)
   {
-    private readonly byte[] m_bytes;
+    private readonly byte[] m_bytes = bytes;
     private int m_bitPosition;
-
-    public BitReader(byte[] bytes) => m_bytes = bytes;
 
     public int Read(int bitCount)
     {
