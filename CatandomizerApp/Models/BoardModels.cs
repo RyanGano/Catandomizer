@@ -46,7 +46,7 @@ public class BoardSpace
       _ => throw new NotSupportedException()
     };
 
-    Value = landSpace?.Value;
+    Value = landSpace.Value;
     IsRed = Value is 6 or 8;
     PipCount = Value switch
     {
