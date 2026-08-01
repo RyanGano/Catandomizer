@@ -11,6 +11,13 @@ on:
       - ".github/workflows/deploy-service.yml"
   workflow_dispatch: # allow manual runs from the Actions tab
 
+# Serialize deploys of this app. cancel-in-progress is false on purpose:
+# interrupting a deploy mid-flight can leave the App Service in a broken
+# state, so a superseded run is allowed to finish first.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 # The deploy authenticates with a publish profile, so no GITHUB_TOKEN
 # scope beyond reading the repo is required.
 permissions:
