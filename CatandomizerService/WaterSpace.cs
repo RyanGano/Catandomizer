@@ -1,9 +1,4 @@
-public class WaterSpace
+public class WaterSpace(HarborType? harborType)
 {
-  public WaterSpace(HarborType? harborType)
-  {
-    HarborType = harborType;
-  }
-
-  public HarborType? HarborType { get; }
+  public HarborType? HarborType { get; } = harborType;
 }

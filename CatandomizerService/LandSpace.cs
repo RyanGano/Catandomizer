@@ -1,13 +1,5 @@
-public class LandSpace
+public class LandSpace(LandType landType, LandValue? landValue, int id)
 {
-  public LandSpace(LandType landType, LandValue? landValue, int id)
-  {
-    LandType = landType;
-    LandValue = landValue;
-    ConnectedSpaces = new List<LandSpace>();
-    Id = id;
-  }
-
   public void AddConnectedSpace(LandSpace landSpace)
   {
     if (ConnectedSpaces.Contains(landSpace))
@@ -24,8 +16,8 @@ public class LandSpace
     return $"ID: {Id} / LandType: {LandType} / LandValue: {LandValue}";
   }
 
-  public LandType LandType { get; }
-  public LandValue? LandValue { get; set; }
-  public List<LandSpace> ConnectedSpaces { get; }
-  public int Id { get; }
+  public LandType LandType { get; } = landType;
+  public LandValue? LandValue { get; set; } = landValue;
+  public List<LandSpace> ConnectedSpaces { get; } = new List<LandSpace>();
+  public int Id { get; } = id;
 }
