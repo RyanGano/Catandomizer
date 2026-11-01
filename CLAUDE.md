@@ -66,15 +66,15 @@ Blazor WebAssembly loads `appsettings.{Environment}.json` over `appsettings.json
 
 Both projects deploy to Azure App Service (Windows) via GitHub Actions on push to `master`:
 
-| Project | App Service | URL | Workflow | Publish-profile secret |
-| --- | --- | --- | --- | --- |
-| CatandomizerService | `CatandomizerService` | catandomizerservice.azurewebsites.net | [.github/workflows/deploy-service.yml](.github/workflows/deploy-service.yml) | `AZURE_SERVICE_PUBLISH_PROFILE` |
-| CatandomizerApp | `Catandomizer` | catandomizer.azurewebsites.net | [.github/workflows/deploy-app.yml](.github/workflows/deploy-app.yml) | `AZURE_APP_PUBLISH_PROFILE` |
+| Project | App Service | URL | Workflow |
+| --- | --- | --- | --- |
+| CatandomizerService | `CatandomizerService` | catandomizerservice.azurewebsites.net | [.github/workflows/deploy-service.yml](.github/workflows/deploy-service.yml) |
+| CatandomizerApp | `Catandomizer` | catandomizer.azurewebsites.net | [.github/workflows/deploy-app.yml](.github/workflows/deploy-app.yml) |
 
 - Each workflow is **path-filtered** to its own project, so editing one app does not redeploy the other. Both also support manual `workflow_dispatch` runs.
 - The Blazor app publishes to a folder containing `web.config` + `wwwroot/`; the whole folder is deployed to the site root and `web.config` rewrites requests into `wwwroot/`.
 - The service's CORS policy (`Program.cs`) must include the deployed app origin (`https://catandomizer.azurewebsites.net`) and the app's `BoardService:BaseAddress` (`wwwroot/appsettings.json`) must point at the deployed service — update both if an App Service is renamed.
-- Secrets are set under GitHub repo **Settings → Secrets and variables → Actions**; get each publish profile from the Azure Portal App Service **Overview → Get publish profile**.
+- Both workflows sign in with **OIDC** (`azure/login`), not publish profiles: an Entra app registration with a federated credential that trusts only `repo:RyanGano/Catandomizer:ref:refs/heads/master`, holding the Website Contributor role on the two App Services. Its ids are the repository **variables** `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` (Settings → Secrets and variables → Actions → Variables). Basic-auth publishing is turned off on both App Services, so a publish profile no longer works; don't reintroduce one. Because the credential trusts only `master`, a deploy run from another branch fails at sign-in.
 
 ### PR preview builds
 
