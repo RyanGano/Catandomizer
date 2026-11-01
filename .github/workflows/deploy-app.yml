@@ -20,10 +20,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
-# The deploy authenticates with a publish profile, so no GITHUB_TOKEN
-# scope beyond reading the repo is required.
+# The deploy signs in to Azure with OIDC (a federated credential on an Entra
+# app registration that trusts only this repo's master branch), so it needs
+# id-token: write. No long-lived publish profile is stored in the repo.
 permissions:
   contents: read
+  id-token: write
 
 env:
   AZURE_WEBAPP_NAME: Catandomizer
@@ -44,9 +46,15 @@ jobs:
       - name: Publish
         run: dotnet publish ${{ env.PROJECT_PATH }} -c Release -o ${{ github.workspace }}/publish
 
+      - name: Sign in to Azure
+        uses: azure/login@v3
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_APP_PUBLISH_PROFILE }}
           package: ${{ github.workspace }}/publish
