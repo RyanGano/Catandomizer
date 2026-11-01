@@ -41,9 +41,10 @@ env:
 jobs:
   deploy:
     name: Publish preview
-    # Fork PRs get a read-only token and cannot push to gh-pages; skip rather
-    # than fail loudly on a permissions error.
-    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    # Fork PRs and Dependabot PRs get a read-only token and cannot push to
+    # gh-pages; skip rather than fail loudly on a permissions error. CI still
+    # builds them.
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write # push the built preview to gh-pages
@@ -156,7 +157,7 @@ jobs:
 
   cleanup:
     name: Remove preview
-    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
